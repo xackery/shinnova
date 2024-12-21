@@ -1,17 +1,12 @@
 package main
 
 import (
-	"encoding/json"
-	"encoding/xml"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
-	"github.com/BurntSushi/toml"
-	"github.com/clbanning/mxj/v2"
+	"github.com/xackery/shinnova/nova"
 )
 
 func main() {
@@ -60,132 +55,37 @@ func run() error {
 		}
 
 		outPath := filepath.Dir(path)
-		fmt.Println("outpath", outPath)
 		fileName := filepath.Base(path)
-		fmt.Println("file", fileName)
 		ext := filepath.Ext(fileName)
 		outPath = filepath.Join(outPath, fileName[:len(fileName)-len(ext)])
 
-		if action == "xml" && ext == ".toml" {
-			outPath += ".xml"
-
-			filesFound++
-
-			r, err := os.Open(path)
-			if err != nil {
-				return fmt.Errorf("open: %w", err)
-			}
-
-			w, err := os.Create(outPath)
-			if err != nil {
-				return fmt.Errorf("create: %w", err)
-			}
-			defer w.Close()
-
-			err = tomlToXML(r, w)
-			if err != nil {
-				return fmt.Errorf("xmlToToml: %w", err)
-			}
-
-			return nil
-		}
-
 		if action == "toml" && ext == ".xml" {
-			outPath += ".toml"
+			outPath += ".nv"
 
 			filesFound++
 
-			fmt.Println("copying", path, "to", outPath)
+			//		fmt.Println("copying", path, "to", outPath)
 
-			data, err := os.ReadFile(path)
+			nv, err := nova.NewFromXML(path)
 			if err != nil {
-				return fmt.Errorf("read: %w", err)
+				return fmt.Errorf("nova parse %s: %w", fileName, err)
 			}
 
-			w, err := os.Create(outPath)
+			err = nv.ToNV(outPath)
 			if err != nil {
-				return fmt.Errorf("create: %w", err)
-			}
-			err = xmlToToml(data, w)
-			if err != nil {
-				return fmt.Errorf("tomlToXML: %w", err)
+				return fmt.Errorf("to nv: %w", err)
 			}
 
-			return nil
 		}
 
 		return nil
 	})
 
 	if err != nil {
-		return fmt.Errorf("walk: %w", err)
+		return err
 	}
 
 	fmt.Println("XMLs found:", filesFound)
 
 	return nil
-}
-
-func xmlToToml(data []byte, w io.Writer) error {
-	re := regexp.MustCompile(`(?i)<\?xml[^>]*encoding=["'][^"']*["'][^>]*\?>`)
-	data = re.ReplaceAll(data, []byte(`<?xml version="1.0"?>`))
-
-	mxj.CustomDecoder = &xml.Decoder{Strict: false}
-	mv, err := mxj.NewMapXml(data)
-	if err != nil {
-		return fmt.Errorf("new map xml: %w", err)
-	}
-
-	enc := toml.NewEncoder(w)
-
-	err = enc.Encode(mv)
-	if err != nil {
-		return fmt.Errorf("write toml: %w", err)
-	}
-
-	return nil
-}
-
-func tomlToXML(r io.Reader, w io.Writer) error {
-	var v map[string]interface{}
-	dec := toml.NewDecoder(r)
-	_, err := dec.Decode(&v)
-	if err != nil {
-		return fmt.Errorf("read toml: %w", err)
-	}
-
-	// Convert the map to JSON first
-	jsonData, err := json.Marshal(v)
-	if err != nil {
-		return fmt.Errorf("json marshal: %w", err)
-	}
-
-	// Convert JSON to XML
-	mv, err := mxj.NewMapJson(jsonData)
-	if err != nil {
-		return fmt.Errorf("new map json: %w", err)
-	}
-
-	data, err := mv.XmlIndent("", "  ")
-	if err != nil {
-		return fmt.Errorf("xml indent: %w", err)
-	}
-
-	_, err = w.Write(data)
-	if err != nil {
-		return fmt.Errorf("write xml: %w", err)
-	}
-
-	return nil
-}
-
-// CharsetReader converts non-UTF-8 encodings to UTF-8
-func charsetReader(charset string, input io.Reader) (io.Reader, error) {
-	// Handle different charsets (us-ascii is effectively UTF-8 compatible)
-	switch strings.ToLower(charset) {
-	case "us-ascii", "utf-8":
-		return input, nil
-	default:
-		return nil, fmt.Errorf("unsupported charset: %s", charset)
-	}
 }

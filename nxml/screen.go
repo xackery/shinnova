@@ -1,26 +1,26 @@
-package nova
+package nxml
 
 // STMLBox represents a box in the UI
 type Screen struct {
 	Item             string   `xml:"item,attr"`
-	ScreenID         string   `xml:"ScreenID"`
-	Font             string   `xml:"Font"`
-	RelativePosition string   `xml:"RelativePosition"`
-	LocationX        string   `xml:"Location>X"`
-	LocationY        string   `xml:"Location>Y"`
-	SizeX            string   `xml:"Size>CX"`
-	SizeY            string   `xml:"Size>CY"`
-	StyleVScroll     string   `xml:"Style_VScroll"`
-	StyleHScroll     string   `xml:"Style_HScroll"`
-	StyleTransparent string   `xml:"Style_Transparent"`
-	TooltipReference string   `xml:"TooltipReference"`
-	DrawTemplate     string   `xml:"DrawTemplate"`
-	StyleTitlebar    string   `xml:"Style_Titlebar"`
-	StyleClosebox    string   `xml:"Style_Closebox"`
-	StyleMinimizebox string   `xml:"Style_Minimizebox"`
-	StyleBorder      string   `xml:"Style_Border"`
-	StyleSizable     string   `xml:"Style_Sizable"`
-	StyleQmarkbox    string   `xml:"Style_Qmarkbox"`
+	ScreenID         *string  `xml:"ScreenID"`
+	Font             *string  `xml:"Font"`
+	RelativePosition *string  `xml:"RelativePosition"`
+	LocationX        *string  `xml:"Location>X"`
+	LocationY        *string  `xml:"Location>Y"`
+	SizeX            *string  `xml:"Size>CX"`
+	SizeY            *string  `xml:"Size>CY"`
+	StyleVScroll     *string  `xml:"Style_VScroll"`
+	StyleHScroll     *string  `xml:"Style_HScroll"`
+	StyleTransparent *string  `xml:"Style_Transparent"`
+	TooltipReference *string  `xml:"TooltipReference"`
+	DrawTemplate     *string  `xml:"DrawTemplate"`
+	StyleTitlebar    *string  `xml:"Style_Titlebar"`
+	StyleClosebox    *string  `xml:"Style_Closebox"`
+	StyleMinimizebox *string  `xml:"Style_Minimizebox"`
+	StyleBorder      *string  `xml:"Style_Border"`
+	StyleSizable     *string  `xml:"Style_Sizable"`
+	StyleQmarkbox    *string  `xml:"Style_Qmarkbox"`
 	Pieces           []string `xml:"Pieces"`
 }
 

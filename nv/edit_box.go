@@ -1,4 +1,4 @@
-package nova
+package nv
 
 type EditBox struct {
 	Item             string `xml:"item,attr"`

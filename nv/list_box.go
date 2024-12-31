@@ -1,4 +1,4 @@
-package nova
+package nv
 
 type ListBox struct {
 	Item             string `xml:"item,attr"`

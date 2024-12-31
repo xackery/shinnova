@@ -1,4 +1,4 @@
-package nova
+package nxml
 
 type Page struct {
 	Item                string   `xml:"item,attr"`

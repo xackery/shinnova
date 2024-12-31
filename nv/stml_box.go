@@ -1,4 +1,4 @@
-package nova
+package nv
 
 // STMLBox represents a box in the UI
 type STMLBox struct {
